@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use App\Models\User;
 
-#[Fillable(['name', 'icon'])]
+#[Fillable(['name', 'icon', 'logo_public_id'])]
 class Tool extends Model
 {
     use HasUuids;

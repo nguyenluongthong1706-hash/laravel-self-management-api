@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Services\AuthService;
 use App\Http\Requests\Auth\RegisterRequest;
 use App\Http\Requests\Auth\LoginRequest;
+use App\Http\Resources\UserResource;
 
 class AuthController extends Controller
 {
@@ -24,7 +25,7 @@ class AuthController extends Controller
 
         $user = auth('api')->user();
 
-        return response()->json(['message'=>"Login successfully", 'data' =>$user, 'token' => $token],200);
+        return response()->json(['message'=>"Login successfully", 'data' => new UserResource($user), 'token' => $token],200);
     }
 
     public function logout(){

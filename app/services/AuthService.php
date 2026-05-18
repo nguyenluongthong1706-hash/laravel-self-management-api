@@ -11,7 +11,7 @@ class AuthService {
         $user = $this->authRepo->findByEmail($data['email']);
 
         if($user){
-            throw BusinessException("Email exists on system");
+            throw new BusinessException("Email exists on system");
         }
 
         $data['password'] = Hash::make($data['password']);
@@ -21,7 +21,7 @@ class AuthService {
 
     public function login(array $data){
         if(!$token = auth('api')->attempt($data)){
-            throw BusinessException("Your email or password isn't valid");
+            throw new BusinessException("Your email or password isn't valid");
         }
 
         return $token;

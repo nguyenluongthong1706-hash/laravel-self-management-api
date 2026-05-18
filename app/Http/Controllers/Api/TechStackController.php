@@ -33,7 +33,7 @@ class TechStackController extends Controller
         $result = $imageService->upload($request->file('icon'));
 
         $data['icon'] = $result['url'];
-        $data['icon_public_id'] = $result['public_id'];
+        $data['logo_public_id'] = $result['public_id'];
 
         $newTechStack = $this->techStackService->store($data);
 
@@ -58,7 +58,7 @@ class TechStackController extends Controller
         $techStack = $this->techStackService->find($id);
         $data = $request->validated();
 
-        if ($request->hasFile('image')){
+        if ($request->hasFile('icon')){
             $result = $imageService->update($techStack->logo_public_id ,$request->file('icon'));
 
             $data['icon'] = $result['url'];

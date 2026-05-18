@@ -7,10 +7,15 @@ use Illuminate\Http\Request;
 use App\Http\Requests\Account\UpdateProfileRequest;
 use App\Http\Requests\Account\UploadAvatarRequest;
 use App\Http\Requests\Account\AssignToolRequest;
+use App\Http\Requests\Account\AssignMultipleToolRequest;
+use App\Http\Requests\Account\AssignMultipleTechRequest;
 use App\Http\Requests\Account\AssignTechRequest;
 use App\Services\AccountService;
 use App\Services\LocationService;
 use App\Service\UploadImageService;
+use App\Http\Resources\UserResource;
+use App\Http\Resources\ToolResource;
+use App\Http\Resources\TechResource;
 
 class AccountController extends Controller
 {
@@ -24,7 +29,7 @@ class AccountController extends Controller
         $user = $this->accountService->find($request->user()->id);
         $this->authorize('view', $user);
 
-        return response()->json(['message'=>"Get profile successfully", 'data'=>auth('api')->user()],200);
+        return response()->json(['message'=>"Get profile successfully", 'data'=> new UserResource(auth('api')->user()->load('location'))],200);
     }
 
     /**
@@ -37,7 +42,7 @@ class AccountController extends Controller
 
         $user = $this->accountService->update($request->user()->id, $request->validated());
 
-        return response()->json(['message'=>"Update profile successfully", 'data'=>$user],200);
+        return response()->json(['message'=>"Update profile successfully", 'data'=> new UserResource($user)],200);
     }
 
     public function uploadAvatar(UploadAvatarRequest $request, UploadImageService $imageService){
@@ -54,10 +59,22 @@ class AccountController extends Controller
         return response()->json(['message'=>"Upload Avatar successfully", 'data'=>$user],200);
     }
 
+    public function getToolByAccount(Request $request){
+        $tools = $this->accountService->getToolByAccount($request->user()->id);
+        info($tools);
+
+        return response()->json(['message'=>"Get tool list follow current user successfully", 'data'=>$tools],200);
+    }
+
     public function assignTool(AssignToolRequest $request){
         $this->accountService->assignTool($request->user()->id, $request->validated());
 
         return response()->json(['message'=>"Assign a tool to a user successfully"],200);
+    }
+
+    public function assignMultipleTools(AssignMultipleToolRequest $request){
+        $tools = $this->accountService->assignMultipleTools($request->user()->id, $request->validated());
+        return response()->json(['message'=>"Assign a tool to a user successfully", 'data'=> $tools],200);
     }
 
     public function unAssignTool(string $tool_id){
@@ -66,10 +83,23 @@ class AccountController extends Controller
         return response()->json(['message'=>"Unassign a tool to a user successfully"],200);
     }
 
+    public function getTechByAccount(Request $request){
+        $techs = $this->accountService->getTechByAccount($request->user()->id);
+        info($techs);
+
+        return response()->json(['message'=>"Get tool list follow current user successfully", 'data'=> $techs],200);
+    }
+
     public function assignTech(AssignTechRequest $request){
         $this->accountService->assignTech($request->user()->id, $request->validated());
 
         return response()->json(['message'=>"Assign a tech to a user successfully"],200);
+    }
+
+    public function assignMultipleTechs(AssignMultipleTechRequest $request){
+        $techs = $this->accountService->assignMultipleTechs($request->user()->id, $request->validated());
+
+        return response()->json(['message'=>"Assign some techs to a user successfully", 'data' => $techs],200);
     }
 
     public function unAssignTech(string $tech_id){

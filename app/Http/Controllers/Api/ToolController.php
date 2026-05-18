@@ -8,6 +8,7 @@ use App\Http\Requests\Tool\CreateToolRequest;
 use App\Http\Requests\Tool\UpdateToolRequest;
 use App\Services\ToolService;
 use App\Services\Image\UploadImageService;
+    use Illuminate\Support\Facades\Log; 
 
 
 class ToolController extends Controller
@@ -34,7 +35,7 @@ class ToolController extends Controller
         $result = $imageService->upload($request->file('icon'));
 
         $data['icon'] = $result['url'];
-        $data['icon_public_id'] = $result['public_id'];
+        $data['logo_public_id'] = $result['public_id'];
 
         $newTool = $this->toolService->store($data);
 
@@ -59,7 +60,7 @@ class ToolController extends Controller
         $tool = $this->toolService->find($id);
         $data = $request->validated();
 
-        if ($request->hasFile('image')){
+        if ($request->hasFile('icon')){
             $result = $imageService->update($tool->logo_public_id ,$request->file('icon'));
 
             $data['icon'] = $result['url'];

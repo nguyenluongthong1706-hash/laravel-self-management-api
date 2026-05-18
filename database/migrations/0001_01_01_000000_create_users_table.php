@@ -18,6 +18,8 @@ return new class extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->string('role')->default('USER');
+            $table->string('date_of_birth')->nullable();
+            $table->enum('gender', ['male', 'female'])->nullable();
             $table->string('avatar')->nullable();
             $table->string('avatar_public_id')->nullable();
             $table->string('field')->nullable();
@@ -43,6 +45,7 @@ return new class extends Migration
             $table->longText('payload');
             $table->integer('last_activity')->index();
         });
+
     }
 
     /**

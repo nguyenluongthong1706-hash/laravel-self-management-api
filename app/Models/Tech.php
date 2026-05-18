@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use App\Models\User;
 use App\Models\Product;
 #[Table('techs')]
-#[Fillable(['name', 'icon'])]
+#[Fillable(['name', 'icon', 'logo_public_id'])]
 class Tech extends Model
 {
     use HasUuids;

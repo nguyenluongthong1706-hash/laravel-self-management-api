@@ -31,11 +31,13 @@ Route::prefix('v1')->group(function(){
             Route::put('avatar', [AccountController::class, 'uploadAvatar']);
 
             // manage tool
-            Route::post('tool', [AccountController::class, 'assignTool']);
+            Route::get('tools', [AccountController::class, 'getToolByAccount']);
+            Route::post('tools', [AccountController::class, 'assignMultipleTools']);
             Route::delete('tool/{tool_id}', [AccountController::class, 'unAssignTool']);
 
             // manage tech stack
-            Route::post('tech', [AccountController::class, 'assignTech']);
+            Route::get('techs', [AccountController::class, 'getTechByAccount']);
+            Route::post('techs', [AccountController::class, 'assignMultipleTechs']);
             Route::delete('tech/{tech_id}', [AccountController::class, 'unAssignTech']);
 
             // manage education
