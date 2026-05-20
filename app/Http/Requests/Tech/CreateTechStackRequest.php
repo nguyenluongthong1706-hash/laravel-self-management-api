@@ -4,8 +4,9 @@ namespace App\Http\Requests\Tech;
 
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
+use App\Http\Requests\ApiRequest;
 
-class CreateTechStackRequest extends FormRequest
+class CreateTechStackRequest extends ApiRequest
 {
     /**
      * Determine if the user is authorized to make this request.

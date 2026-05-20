@@ -3,13 +3,15 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Attributes\Table;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use App\Models\Product;
 
-#[Fillable(['title', 'link','product_id'])]
-class ProductUrl extends Model
+#[Table('product_urls')]
+#[Fillable(['title', 'url','product_id'])]
+class ProductLink extends Model
 {
     use HasUuids;
 

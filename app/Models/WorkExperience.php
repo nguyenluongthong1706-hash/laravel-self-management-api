@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use App\Models\User;
 
-#[Fillable(['position', 'place_at','start_date','end_date','user_id'])]
+#[Fillable(['position', 'organization','start_date','end_date','user_id'])]
 class WorkExperience extends Model
 {
     use HasUuids;

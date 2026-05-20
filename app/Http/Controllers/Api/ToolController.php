@@ -7,9 +7,7 @@ use Illuminate\Http\Request;
 use App\Http\Requests\Tool\CreateToolRequest;
 use App\Http\Requests\Tool\UpdateToolRequest;
 use App\Services\ToolService;
-use App\Services\Image\UploadImageService;
-    use Illuminate\Support\Facades\Log; 
-
+use App\Http\Resources\ToolResource;
 
 class ToolController extends Controller
 {
@@ -20,26 +18,21 @@ class ToolController extends Controller
      */
     public function index()
     {
-        $tool = $this->toolService->all();
+        $tools = $this->toolService->all();
 
-        return response()->json(['message'=>"Get tool list successfully", 'data'=>$tool],200);
+        return response()->json(['message'=>"Get tool list successfully", 'data'=>ToolResource::collection($tools)],200);
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(CreateToolRequest $request, UploadImageService $imageService)
+    public function store(CreateToolRequest $request)
     {
         $data = $request->validated();
 
-        $result = $imageService->upload($request->file('icon'));
-
-        $data['icon'] = $result['url'];
-        $data['logo_public_id'] = $result['public_id'];
-
         $newTool = $this->toolService->store($data);
 
-        return response()->json(['message'=>"Create a tool successfully", 'data'=>$newTool],200);
+        return response()->json(['message'=>"Create a tool successfully", 'data'=>new ToolResource($newTool)],201);
     }
 
     /**
@@ -49,27 +42,20 @@ class ToolController extends Controller
     {
         $tool = $this->toolService->find($id);
 
-        return response()->json(['message'=>"Get tool successfully", 'data'=>$tool],200);
+        return response()->json(['message'=>"Get tool successfully", 'data'=> new ToolResource($tool)],200);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateToolRequest $request, string $id, UploadImageService $imageService)
+    public function update(UpdateToolRequest $request, string $id)
     {
         $tool = $this->toolService->find($id);
         $data = $request->validated();
 
-        if ($request->hasFile('icon')){
-            $result = $imageService->update($tool->logo_public_id ,$request->file('icon'));
+        $updatedTool = $this->toolService->update($data, $tool);
 
-            $data['icon'] = $result['url'];
-            $data['logo_public_id'] = $result['public_id'];
-        }
-
-        $newTool = $this->toolService->update($id, $data);
-
-        return response()->json(['message'=>"Update a tool successfully", 'data'=>$newTool],200);
+        return response()->json(['message'=>"Update a tool successfully", 'data'=> new ToolResource($updatedTool)],200);
     }
 
     /**

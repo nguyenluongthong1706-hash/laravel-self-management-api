@@ -17,9 +17,9 @@ class UserResource extends JsonResource
         $hasLocation = $this->relationLoaded('location') && $this->location;
 
         $locationData = [
-            'level1' => $hasLocation ? $this->location->level1 : '',
-            'level2' => $hasLocation ? $this->location->level2 : '',
-            'level3' => $hasLocation ? $this->location->level3 : '',
+            'province' => $hasLocation ? $this->location->province : '',
+            'district' => $hasLocation ? $this->location->district : '',
+            'ward' => $hasLocation ? $this->location->ward : '',
             'detail' => $hasLocation ? $this->location->detail : '',
         ];
 
@@ -27,18 +27,16 @@ class UserResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name,
             'email' => $this->email,
-            'date_of_birth' => $this->date_of_birth,
+            'dateOfBirth' => $this->date_of_birth,
             'gender' => $this->gender,
             'field' => $this->field,
             'slogan' => $this->slogan,
-            'about_me' => $this->about_me,
+            'aboutMe' => $this->about_me,
             'avatar' => $this->avatar,
-            'facebook_link' => $this->facebook_link,
-            'linkedin_link' => $this->linkedin_link,
-            'github_link' => $this->github_link,
+            'facebookLink' => $this->facebook_link,
+            'linkedinLink' => $this->linkedin_link,
+            'githubLink' => $this->github_link,
             'location' => $locationData,
-            'created_at' => $this->created_at,
-            'updated_at' => $this->updated_at,
         ];
     }
 }

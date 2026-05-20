@@ -4,8 +4,9 @@ namespace App\Http\Requests\Education;
 
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
+use App\Http\Requests\ApiRequest;
 
-class CreateEducationRequest extends FormRequest
+class CreateEducationRequest extends ApiRequest
 {
     /**
      * Determine if the user is authorized to make this request.

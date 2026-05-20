@@ -9,20 +9,21 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use App\Models\User;
-use App\Models\ProductUrl;
+use App\Models\ProductLink;
 use App\Models\Tech;
 
-#[Fillable(['name', 'description','task','image','start_date','end_date','user_id'])]
+#[Fillable(['name', 'description','task','image', 'image_public_id', 'start_date','end_date','user_id'])]
 class Product extends Model
 {
     use HasUuids;
+    protected $with = ['techs', 'links'];
 
     public function user(): BelongsTo{
         return $this->belongsTo(User::class, "user_id","id");
     }
 
-    public function urls(): HasMany{
-        return $this->hasMany(ProductUrl::class, 'product_id','id');
+    public function links(): HasMany{
+        return $this->hasMany(ProductLink::class, 'product_id','id');
     }
 
     public function techs():BelongsToMany{

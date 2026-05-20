@@ -27,6 +27,8 @@ class User extends Authenticatable implements JWTSubject
     /** @use HasFactory<UserFactory> */
     use HasUuids, Notifiable;
 
+    protected $with = ['location'];
+
     public function location(): HasOne{
         return $this->hasOne(Location::class, 'user_id', 'id');
     }

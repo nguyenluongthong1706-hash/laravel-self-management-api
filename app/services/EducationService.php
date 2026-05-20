@@ -1,5 +1,6 @@
 <?php
 namespace App\Services;
+
 use App\Repositories\EducationRepository;
 use App\Exceptions\BusinessException;
 
@@ -21,15 +22,15 @@ class EducationService {
     public function store( string $user_id, array $data){
         $data['user_id'] = $user_id;
         
-        $education = $this->educationRepo->store($data);
+        $newEducation = $this->educationRepo->store($data);
 
-        return $education;
+        return $newEducation;
     }
 
     public function update(string $id, array $data){
-        $education = $this->educationRepo->update($id, $data);
+        $updatedEducation = $this->educationRepo->update($id, $data);
 
-        return $education;
+        return $updatedEducation;
     }
 
     public function destroy(string $id){

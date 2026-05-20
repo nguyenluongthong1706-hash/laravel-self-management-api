@@ -4,8 +4,9 @@ namespace App\Http\Requests\Work;
 
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
+use App\Http\Requests\ApiRequest;
 
-class CreateWorkExperienceRequest extends FormRequest
+class CreateWorkExperienceRequest extends ApiRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,7 +25,7 @@ class CreateWorkExperienceRequest extends FormRequest
     {
         return [
             'position' => ['required', 'string', 'min:3', 'max:255'],
-            'place_at' => ['required', 'string', 'min:3', 'max:255'],
+            'organization' => ['required', 'string', 'min:3', 'max:255'],
             'start_date' => ['required', 'date'],
             'end_date' => ['required', 'date'],
         ];

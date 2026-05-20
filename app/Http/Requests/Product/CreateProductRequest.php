@@ -4,8 +4,9 @@ namespace App\Http\Requests\Product;
 
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
+use App\Http\Requests\ApiRequest;
 
-class CreateProductRequest extends FormRequest
+class CreateProductRequest extends ApiRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -29,9 +30,9 @@ class CreateProductRequest extends FormRequest
             'image' => ['required', 'mimes:jpg,jpeg,png', 'max:2048'],
             'start_date'  => ['required', 'date'],
             'end_date'  => ['required', 'date'],
-            'urls' => ['required','array','min:1'],
-            'url.*.title' => ['required', 'string','min:3','max:255'],
-            'url.*.link' => ['required', 'url:http,https'],
+            'links' => ['required','array','min:1'],
+            'link.*.title' => ['required', 'string','min:3','max:255'],
+            'link.*.url' => ['required', 'url'],
             'techs'  => ['required','array','min:1'],
             'tech.*.tech_id' =>['required', 'exists:techs,id']
         ];

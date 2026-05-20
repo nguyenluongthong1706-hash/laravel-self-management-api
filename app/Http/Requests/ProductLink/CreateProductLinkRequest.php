@@ -1,11 +1,12 @@
 <?php
 
-namespace App\Http\Requests\Product_Url;
+namespace App\Http\Requests\ProductLink;
 
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
+use App\Http\Requests\ApiRequest;
 
-class UpdateProductUrlRequest extends FormRequest
+class CreateProductLinkRequest extends ApiRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,7 +25,7 @@ class UpdateProductUrlRequest extends FormRequest
     {
         return [
             'title' => ['required', 'string', 'min:3', 'max:255'],
-            'link' => ['required', 'url:http,https'],
+            'url' => ['required', 'url'],
         ];
     }
 }

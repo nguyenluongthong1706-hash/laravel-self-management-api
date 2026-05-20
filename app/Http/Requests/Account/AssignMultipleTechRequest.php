@@ -4,8 +4,9 @@ namespace App\Http\Requests\Account;
 
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
+use App\Http\Requests\ApiRequest;
 
-class AssignMultipleTechRequest extends FormRequest
+class AssignMultipleTechRequest extends ApiRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -21,7 +22,7 @@ class AssignMultipleTechRequest extends FormRequest
      * @return array<string, ValidationRule|array<mixed>|string>
      */
     public function rules(): array
-    {
+    { 
         return [
             'techs' => ['required', 'array', 'min:1'],
             'techs.*.tech_id'=>['required', 'exists:techs,id']
