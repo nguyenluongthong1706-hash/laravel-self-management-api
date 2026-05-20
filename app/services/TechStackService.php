@@ -1,10 +1,16 @@
 <?php
 namespace App\Services;
+
+use App\Models\Tech;
 use App\Repositories\TechStackRepository;
+use App\Services\Image\UploadImageService;
 use App\Exceptions\BusinessException;
 
 class TechStackService {
-    public function __construct(private TechStackRepository $techStackRepo){}
+    public function __construct(
+        private TechStackRepository $techStackRepo,
+        private  UploadImageService $imageService
+    ){}
 
     public function all(){
         return $this->techStackRepo->all();
@@ -15,15 +21,27 @@ class TechStackService {
     }
 
     public function store( array $data){
-        $techStack = $this->techStackRepo->store($data);
+        $result = $this->imageService->upload($data['icon']);
 
-        return $techStack;
+        $data['icon'] = $result['url'];
+        $data['logo_public_id'] = $result['public_id'];
+
+        $newTechStack = $this->techStackRepo->store($data);
+
+        return $newTechStack;
     }
 
-    public function update(string $id, array $data){
-        $techStack = $this->techStackRepo->update($id, $data);
+    public function update(array $data, Tech $techStack){
+        if (isset($data['icon'])){
+            $result = $imageService->update($techStack->logo_public_id ,$data['icon']);
 
-        return $techStack;
+            $data['icon'] = $result['url'];
+            $data['logo_public_id'] = $result['public_id'];
+        }
+
+        $updatedTechStack = $this->techStackRepo->update($techStack->id, $data);
+
+        return $updatedTechStack;
     }
 
     public function destroy(string $id){

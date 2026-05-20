@@ -8,7 +8,7 @@ use App\Http\Requests\Product\AssignTechRequest;
 use App\Http\Requests\Product\CreateProductRequest;
 use App\Http\Requests\Product\UpdateProductRequest;
 use App\Services\ProductService;
-use App\Services\Image\UploadImageService;
+use App\Http\Resources\ProductResource;
 
 class ProductController extends Controller
 {
@@ -19,33 +19,28 @@ class ProductController extends Controller
      */
     public function index()
     {
-        $product = $this->productService->all();
+        $products = $this->productService->all();
 
-        return response()->json(['message'=>"Get product list successfully", 'data'=>$product],200);
+        return response()->json(['message'=>"Get product list successfully", 'data'=>ProductResource::collection($products)],200);
     }
 
     public function getByAccount(Request $request)
     {
-        $education = $this->productService->getByAccount($request->user()->id);
+        $products = $this->productService->getByAccount($request->user()->id);
 
-        return response()->json(['message'=>"Get education list successfully", 'data'=>$education],200);
+        return response()->json(['message'=>"Get education list successfully", 'data'=>ProductResource::collection($products)],200);
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(CreateProductRequest $request, UploadImageService $imageService)
+    public function store(CreateProductRequest $request)
     {
         $data = $request->validated();
 
-        $result = $imageService->upload($request->file('image'));
-
-        $data['image'] = $result['url'];
-        $data['image_public_id'] = $result['public_id'];
-
         $newProduct = $this->productService->store($request->user()->id, $data);
 
-        return response()->json(['message'=>"Create a product successfully", 'data'=>$newProduct],200);
+        return response()->json(['message'=>"Create a product successfully", 'data'=>new ProductResource($newProduct)],200);
     }
 
     /**
@@ -55,7 +50,7 @@ class ProductController extends Controller
     {
         $product = $this->productService->find($id);
 
-        return response()->json(['message'=>"Get product successfully", 'data'=>$product],200);
+        return response()->json(['message'=>"Get product successfully", 'data'=>new ProductResource($product)],200);
     }
 
     /**
@@ -66,16 +61,9 @@ class ProductController extends Controller
         $product = $this->productService->find($product_id);
         $data = $request->validated();
 
-        if ($request->hasFile('image')){
-            $result = $imageService->update($product->image_public_id ,$request->file('image'));
+        $updatedProduct = $this->productService->update($data, $product);
 
-            $data['image'] = $result['url'];
-            $data['image_public_id'] = $result['public_id'];
-        }
-
-        $newProduct = $this->productService->update($product_id, $data);
-
-        return response()->json(['message'=>"Update a product successfully", 'data'=>$newProduct],200);
+        return response()->json(['message'=>"Update a product successfully", 'data'=>new ProductResource($updatedProduct)],200);
     }
 
     public function assignTech(string $product_id, AssignTechRequest $request){

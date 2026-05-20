@@ -4,9 +4,10 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Services\WorkExperienceService;
 use App\Http\Requests\Work\CreateWorkExperienceRequest;
 use App\Http\Requests\Work\UpdateWorkExperienceRequest;
+use App\Services\WorkExperienceService;
+use App\Http\Resources\WorkExperienceResource;
 
 class WorkExperienceController extends Controller
 {
@@ -17,16 +18,16 @@ class WorkExperienceController extends Controller
      */
     public function index()
     {
-        $workExperience = $this->workExperienceService->all();
+        $workExperiences = $this->workExperienceService->all();
 
-        return response()->json(['message'=>"Get work experience list successfully", 'data'=>$workExperience],200);
+        return response()->json(['message'=>"Get work experience list successfully", 'data'=>WorkExperienceResource::collection($workExperiences)],200);
     }
 
     public function getByAccount(Request $request)
     {
-        $education = $this->workExperienceService->getByAccount($request->user()->id);
+        $workExperiences = $this->workExperienceService->getByAccount($request->user()->id);
 
-        return response()->json(['message'=>"Get work experience list successfully", 'data'=>$education],200);
+        return response()->json(['message'=>"Get work experience list successfully", 'data'=>WorkExperienceResource::collection($workExperiences)],200);
     }
 
     /**
@@ -36,7 +37,7 @@ class WorkExperienceController extends Controller
     {
         $newWorkExperience = $this->workExperienceService->store($request->user()->id, $request->validated());
 
-        return response()->json(['message'=>"Create a work experience successfully", 'data'=>$newWorkExperience],200);
+        return response()->json(['message'=>"Create a work experience successfully", 'data'=> new WorkExperienceResource($newWorkExperience)],200);
     }
 
     /**
@@ -46,7 +47,7 @@ class WorkExperienceController extends Controller
     {
         $workExperience = $this->workExperienceService->find($id);
 
-        return response()->json(['message'=>"Get work experience successfully", 'data'=>$workExperience],200);
+        return response()->json(['message'=>"Get work experience successfully", 'data'=>new WorkExperienceResource($workExperience)],200);
     }
 
     /**
@@ -54,9 +55,9 @@ class WorkExperienceController extends Controller
      */
     public function update(string $work_experience_id, UpdateWorkExperienceRequest $request)
     {
-        $newWorkExperience = $this->workExperienceService->update($work_experience_id, $request->validated());
+        $updatedWorkExperience = $this->workExperienceService->update($work_experience_id, $request->validated());
 
-        return response()->json(['message'=>"Update a work experience successfully", 'data'=>$newWorkExperience],200);
+        return response()->json(['message'=>"Update a work experience successfully", 'data'=>new WorkExperienceResource($updatedWorkExperience)],200);
     }
 
     /**

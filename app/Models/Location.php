@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use App\Models\User;
 
-#[Fillable(['level1', 'level2','level3','detail','user_id'])]
+#[Fillable(['province', 'district','ward','detail','user_id'])]
 class Location extends Model
 {
     use HasUuids;

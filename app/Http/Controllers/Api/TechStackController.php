@@ -4,10 +4,10 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Services\TechStackService;
 use App\Http\Requests\Tech\CreateTechStackRequest;
 use App\Http\Requests\Tech\UpdateTechStackRequest;
-use App\Services\Image\UploadImageService;
+use App\Services\TechStackService;
+use App\Http\Resources\TechResource;
 
 class TechStackController extends Controller
 {
@@ -18,26 +18,21 @@ class TechStackController extends Controller
      */
     public function index()
     {
-        $techStack = $this->techStackService->all();
+        $techStacks = $this->techStackService->all();
 
-        return response()->json(['message'=>"Get tech list successfully", 'data'=>$techStack],200);
+        return response()->json(['message'=>"Get tech list successfully", 'data'=>TechResource::collection($techStacks)],200);
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(CreateTechStackRequest $request, UploadImageService $imageService)
+    public function store(CreateTechStackRequest $request)
     {
         $data = $request->validated();
 
-        $result = $imageService->upload($request->file('icon'));
-
-        $data['icon'] = $result['url'];
-        $data['logo_public_id'] = $result['public_id'];
-
         $newTechStack = $this->techStackService->store($data);
 
-        return response()->json(['message'=>"Create a tech successfully", 'data'=>$newTechStack],200);
+        return response()->json(['message'=>"Create a tech successfully", 'data'=> new TechResource($newTechStack)],201);
     }
 
     /**
@@ -47,27 +42,20 @@ class TechStackController extends Controller
     {
         $techStack = $this->techStackService->find($id);
 
-        return response()->json(['message'=>"Get tech successfully", 'data'=>$techStack],200);
+        return response()->json(['message'=>"Get tech successfully", 'data'=>new TechResource($techStack)],200);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateTechStackRequest $request, string $id, UploadImageService $imageService)
+    public function update(UpdateTechStackRequest $request, string $id)
     {
         $techStack = $this->techStackService->find($id);
         $data = $request->validated();
 
-        if ($request->hasFile('icon')){
-            $result = $imageService->update($techStack->logo_public_id ,$request->file('icon'));
+        $updatedTechStack = $this->techStackService->update($data, $techStack);
 
-            $data['icon'] = $result['url'];
-            $data['logo_public_id'] = $result['public_id'];
-        }
-
-        $newTechStack = $this->techStackService->update($id, $data);
-
-        return response()->json(['message'=>"Update a tech successfully", 'data'=>$newTechStack],200);
+        return response()->json(['message'=>"Update a tech successfully", 'data'=> new TechResource($updatedTechStack)],200);
     }
 
     /**

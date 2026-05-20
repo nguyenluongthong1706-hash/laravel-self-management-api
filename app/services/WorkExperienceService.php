@@ -1,5 +1,6 @@
 <?php
 namespace App\Services;
+
 use App\Repositories\WorkExperienceRepository;
 use App\Exceptions\BusinessException;
 
@@ -21,15 +22,15 @@ class WorkExperienceService {
     public function store( string $user_id,  array $data){
         $data['user_id'] = $user_id;
         
-        $workExperience = $this->workExperienceRepo->store($data);
+        $newWorkExperience = $this->workExperienceRepo->store($data);
 
-        return $workExperience;
+        return $newWorkExperience;
     }
 
     public function update(string $id, array $data){
-        $workExperience = $this->workExperienceRepo->update($id, $data);
+        $updatedWorkExperience = $this->workExperienceRepo->update($id, $data);
 
-        return $workExperience;
+        return $updatedWorkExperience;
     }
 
     public function destroy(string $id){

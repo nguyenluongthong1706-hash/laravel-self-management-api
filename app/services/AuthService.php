@@ -1,7 +1,8 @@
 <?php
 namespace App\Services;
-use App\Repositories\AuthRepository;
+
 use Illuminate\Support\Facades\Hash;
+use App\Repositories\AuthRepository;
 use App\Exceptions\BusinessException;
 
 class AuthService {

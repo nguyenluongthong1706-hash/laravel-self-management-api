@@ -4,8 +4,9 @@ namespace App\Http\Requests\Account;
 
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
+use App\Http\Requests\ApiRequest;
 
-class UpdateProfileRequest extends FormRequest
+class UpdateProfileRequest extends ApiRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -29,13 +30,14 @@ class UpdateProfileRequest extends FormRequest
             'field' => ['required', 'string','min:3', 'max:255'],
             'slogan' => ['required', 'string','min:3', 'max:255'],
             'about_me' => ['required', 'string','min:3'],
-            'facebook_link' => ['required', 'url:http,https'],
-            'linkedin_link' => ['required', 'url:http,https'],
-            'github_link' => ['required', 'url:http,https'],
-            'level1' => ['required', 'string','min:3', 'max:255'],
-            'level2' => ['required', 'string','min:3', 'max:255'],
-            'level3' => ['required', 'string','min:3', 'max:255'],
-            'detail' => ['nullable', 'string','min:3', 'max:255'],
+            'facebook_link' => ['required', 'url'],
+            'linkedin_link' => ['required', 'url'],
+            'github_link' => ['required', 'url'],
+            'location' => ['required', 'array'],
+            'location.province' => ['required', 'string','min:3', 'max:255'],
+            'location.district' => ['required', 'string','min:3', 'max:255'],
+            'location.ward' => ['required', 'string','min:3', 'max:255'],
+            'location.detail' => ['nullable', 'string','min:3', 'max:255'],
         ];
     }
 }

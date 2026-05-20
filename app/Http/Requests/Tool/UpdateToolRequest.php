@@ -4,8 +4,9 @@ namespace App\Http\Requests\Tool;
 
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
+use App\Http\Requests\ApiRequest;
 
-class UpdateToolRequest extends FormRequest
+class UpdateToolRequest extends ApiRequest
 {
     /**
      * Determine if the user is authorized to make this request.

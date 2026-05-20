@@ -1,5 +1,6 @@
 <?php
 namespace App\Services;
+
 use App\Repositories\LocationRepository;
 use App\Exceptions\BusinessException;
 
@@ -17,15 +18,15 @@ class LocationService {
     public function store( string $user_id, array $data){
         $data['user_id'] = $user_id;
         
-        $location = $this->locationRepo->store($data);
+        $newLocation = $this->locationRepo->store($data);
 
-        return $location;
+        return $newLocation;
     }
 
     protected function update(string $id, array $data){
-        $location = $this->locationRepo->update($id, $data);
+        $updatedLocation = $this->locationRepo->update($id, $data);
 
-        return $location;
+        return $updatedLocation;
     }
 
     public function updateOrCreate(string $user_id, array $data){

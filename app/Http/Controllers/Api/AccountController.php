@@ -5,14 +5,13 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Http\Requests\Account\UpdateProfileRequest;
-use App\Http\Requests\Account\UploadAvatarRequest;
 use App\Http\Requests\Account\AssignToolRequest;
 use App\Http\Requests\Account\AssignMultipleToolRequest;
 use App\Http\Requests\Account\AssignMultipleTechRequest;
 use App\Http\Requests\Account\AssignTechRequest;
+use App\Http\Requests\Account\UploadAvatarRequest;
 use App\Services\AccountService;
 use App\Services\LocationService;
-use App\Service\UploadImageService;
 use App\Http\Resources\UserResource;
 use App\Http\Resources\ToolResource;
 use App\Http\Resources\TechResource;
@@ -26,10 +25,11 @@ class AccountController extends Controller
      */
     public function me(Request $request)
     {
+        info($request);
         $user = $this->accountService->find($request->user()->id);
         $this->authorize('view', $user);
 
-        return response()->json(['message'=>"Get profile successfully", 'data'=> new UserResource(auth('api')->user()->load('location'))],200);
+        return response()->json(['message'=>"Get profile successfully", 'data'=> new UserResource(auth('api')->user())],200);
     }
 
     /**
@@ -49,35 +49,23 @@ class AccountController extends Controller
         $user = $this->accountService->find($request->user()->id);
         $this->authorize('update', $user);
 
-        $result = $imageService->update($user->avatar_public_id, $request->file('avatar'));
-
-        $user = $this->accountService->update($request->user()->id, [
-            'avatar' => $result['url'],
-            'avatar_public_id'=> $result['public_id']
-        ]);
+        $updatedUser = $this->accountService->uploadAvatar($request->validated(), $user);
 
         return response()->json(['message'=>"Upload Avatar successfully", 'data'=>$user],200);
     }
 
     public function getToolByAccount(Request $request){
         $tools = $this->accountService->getToolByAccount($request->user()->id);
-        info($tools);
 
-        return response()->json(['message'=>"Get tool list follow current user successfully", 'data'=>$tools],200);
-    }
-
-    public function assignTool(AssignToolRequest $request){
-        $this->accountService->assignTool($request->user()->id, $request->validated());
-
-        return response()->json(['message'=>"Assign a tool to a user successfully"],200);
+        return response()->json(['message'=>"Get current user's tool list successfully", 'data'=>ToolResource::collection($tools)],200);
     }
 
     public function assignMultipleTools(AssignMultipleToolRequest $request){
         $tools = $this->accountService->assignMultipleTools($request->user()->id, $request->validated());
-        return response()->json(['message'=>"Assign a tool to a user successfully", 'data'=> $tools],200);
+        return response()->json(['message'=>"Assign tools to a user successfully", 'data'=> ToolResource::collection($tools)],200);
     }
 
-    public function unAssignTool(string $tool_id){
+    public function unAssignTool(Request $request, string $tool_id){
         $this->accountService->unAssignTool($request->user()->id, $tool_id);
 
         return response()->json(['message'=>"Unassign a tool to a user successfully"],200);
@@ -85,24 +73,17 @@ class AccountController extends Controller
 
     public function getTechByAccount(Request $request){
         $techs = $this->accountService->getTechByAccount($request->user()->id);
-        info($techs);
 
-        return response()->json(['message'=>"Get tool list follow current user successfully", 'data'=> $techs],200);
-    }
-
-    public function assignTech(AssignTechRequest $request){
-        $this->accountService->assignTech($request->user()->id, $request->validated());
-
-        return response()->json(['message'=>"Assign a tech to a user successfully"],200);
+        return response()->json(['message'=>"Get current user's tech list successfully", 'data'=> TechResource::collection($techs)],200);
     }
 
     public function assignMultipleTechs(AssignMultipleTechRequest $request){
         $techs = $this->accountService->assignMultipleTechs($request->user()->id, $request->validated());
 
-        return response()->json(['message'=>"Assign some techs to a user successfully", 'data' => $techs],200);
+        return response()->json(['message'=>"Assign techs to a user successfully", 'data' => TechResource::collection($techs)],200);
     }
 
-    public function unAssignTech(string $tech_id){
+    public function unAssignTech(Request $request, string $tech_id){
         $this->accountService->unAssignTech($request->user()->id, $tech_id);
 
         return response()->json(['message'=>"Unassign a tech to a user successfully"],200);

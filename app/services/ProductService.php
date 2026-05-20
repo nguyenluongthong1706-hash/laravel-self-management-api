@@ -1,11 +1,17 @@
 <?php
 namespace App\Services;
-use App\Repositories\ProductRepository;
-use App\Exceptions\BusinessException;
+
 use Illuminate\Support\Arr;
+use App\Modals\Product;
+use App\Repositories\ProductRepository;
+use App\Services\Image\UploadImageService;
+use App\Exceptions\BusinessException;
 
 class ProductService {
-    public function __construct(private ProductRepository $ProductRepo){}
+    public function __construct(
+        private ProductRepository $ProductRepo, 
+        private UploadImageService $imageService
+    ){}
 
     public function all(){
         return $this->ProductRepo->all();
@@ -20,21 +26,25 @@ class ProductService {
     }
 
     public function store( string $user_id, array $data){
+        $result = $this->imageService->upload($data['image']);
+        $data['image'] = $result['url'];
+        $data['image_public_id'] = $result['public_id'];
+
         $productData = collect($data)->only(['name','description','task','image','image_public_id','start_date','end_date','user_id'])->toArray();
         $productData['user_id']= $user_id;
 
-        $urls = $data['urls']; 
-        $techIds = Arr::isAssoc($data['techs']) 
+        $links = $data['links']; 
+        $techIds = Arr::isAssoc($data['techs'])
         ? collect($data['techs'])->pluck('tech_id')->toArray() 
         : $data['techs'];
 
-        $product = $this->ProductRepo->store($productData);
+        $newProduct = $this->ProductRepo->store($productData);
 
-        $product->urls()->createMany($urls);
+        $newProduct->links()->createMany($links);
 
-        $product->techs()->attach($techIds);
+        $newProduct->techs()->attach($techIds);
 
-        return $product->load(['urls', 'techs']);
+        return $newProduct;
     }
 
     public function assignTech(string $product_id, array $data){
@@ -55,10 +65,17 @@ class ProductService {
         return true;
     }
 
-    public function update(string $id, array $data){
-        $product = $this->ProductRepo->update($id, $data);
+    public function update(array $data, Product $product){
+        if (isset($data['image'])){
+            $result = $this->imageService->update($product->image_public_id ,$data['image']);
 
-        return $product;
+            $data['image'] = $result['url'];
+            $data['image_public_id'] = $result['public_id'];
+        }
+
+        $updateProduct = $this->ProductRepo->update($product->id, $data);
+
+        return $updateProduct;
     }
 
     public function destroy(string $id){

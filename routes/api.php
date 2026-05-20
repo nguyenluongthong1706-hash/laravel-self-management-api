@@ -9,10 +9,10 @@ use App\Http\Controllers\Api\TechStackController;
 use App\Http\Controllers\Api\EducationController;
 use App\Http\Controllers\Api\WorkExperienceController;
 use App\Http\Controllers\Api\ProductController;
-use App\Http\Controllers\Api\ProductUrlController;
+use App\Http\Controllers\Api\ProductLinkController;
 
 Route::get('/', function (Request $request) {
-    return "Well come to our api";
+    return "Welcome to our API";
 });
 
 Route::prefix('v1')->group(function(){
@@ -61,9 +61,9 @@ Route::prefix('v1')->group(function(){
             Route::post('product/{product_id}/tech',[ProductController::class, 'assignTech']);
             Route::delete('product/{product_id}/tech/{tech_id}',[ProductController::class, 'unAssignTech']);
             // manage urls of product
-            Route::post('product/{product_id}/url',[ProductUrlController::class, 'store']);
-            Route::put('product/url/{product_url_id}',[ProductUrlController::class, 'update']);
-            Route::delete('product/url/{product_url_id',[ProductUrlController::class, 'destroy']);
+            Route::post('product/{product_id}/link',[ProductLinkController::class, 'store']);
+            Route::put('product/link/{product_link_id}',[ProductLinkController::class, 'update']);
+            Route::delete('product/link/{product_link_id}',[ProductLinkController::class, 'destroy']);
         });
 
         Route::apiResource('tools', ToolController::class);

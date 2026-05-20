@@ -1,29 +1,46 @@
 <?php
 namespace App\Services;
-use App\Repositories\AccountRepository;
-use App\Exceptions\BusinessException;
+
 use Illuminate\Support\Arr;
+use App\Modals\User;
+use App\Repositories\AccountRepository;
+use App\Services\Image\UploadImageService;
+use App\Exceptions\BusinessException;
 
 class AccountService {
-    public function __construct(private AccountRepository $accountRepo){}
+    public function __construct(
+        private AccountRepository $accountRepo,
+        private UploadImageService $imageService
+    ){}
 
     public function find(string $id){
         return $this->accountRepo->find($id);
     }
 
     public function update(string $id, array $data){
-        $userData = collect($data)->only(['name', 'date_of_birth', 'gender', 'field','slogan','about_me','facebook_link','linkedin_link','github_link'])->toArray();
+        $userData = collect($data)->except(['location'])->toArray();
 
-        $locationData = collect($data)->only(['level1','level2','level3','detail'])->toArray();
+        $locationData = $data['location'];
 
-        $user = $this->accountRepo->update($id, $data);
+        $updatedUser = $this->accountRepo->update($id, $userData);
 
-        $user->location()->updateOrCreate(
-            ['user_id' => $user->id],
+        $updatedUser->location()->updateOrCreate(
+            ['user_id' => $updatedUser->id],
             $locationData
         );
 
-        return $user->load('location');
+        return $updatedUser;
+    }
+
+    public function uploadAvatar(array $data, User $user){
+        $result = $this->imageService->update($user->avatar_public_id, $data['avatar']);
+
+        $updatedUser = $this->accountRepo->update($user()->id, [
+            'avatar' => $result['url'],
+            'avatar_public_id'=> $result['public_id']
+        ]);
+
+        return $updatedUser;
     }
 
     public function getToolByAccount(string $user_id){
@@ -45,7 +62,6 @@ class AccountService {
     }
 
     public function assignMultipleTools(string $user_id, array $data){
-        info($data);
 
         $toolIds = collect($data['tools'])->pluck('tool_id')->toArray();
 
