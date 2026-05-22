@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Education;
 use Illuminate\Http\Request;
 use App\Http\Requests\Education\CreateEducationRequest;
 use App\Http\Requests\Education\UpdateEducationRequest;
@@ -16,15 +17,10 @@ class EducationController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
-    {
-        $educations = $this->educationService->all();
-
-        return response()->json(['message'=>"Get education list successfully", 'data'=>EducationResource::collection($educations)],200);
-    }
-
     public function getByAccount(Request $request)
     {
+        $this->authorize('viewAny', Education::class);
+
         $educations = $this->educationService->getByAccount($request->user()->id);
 
         return response()->json(['message'=>"Get education list successfully", 'data'=>EducationResource::collection($educations)],200);
@@ -35,6 +31,8 @@ class EducationController extends Controller
      */
     public function store(CreateEducationRequest $request)
     {
+        $this->authorize('create', Education::class);
+
         $newEducation = $this->educationService->store($request->user()->id, $request->validated());
 
         return response()->json(['message'=>"Create an education successfully", 'data'=> new EducationResource($newEducation)],200);
@@ -46,6 +44,7 @@ class EducationController extends Controller
     public function show(string $id)
     {
         $education = $this->educationService->find($id);
+        $this->authorize('view', $education);
 
         return response()->json(['message'=>"Get education successfully", 'data'=>new EducationResource($education)],200);
     }
@@ -55,6 +54,9 @@ class EducationController extends Controller
      */
     public function update(string $education_id, UpdateEducationRequest $request)
     {
+        $education = $this->educationService->find($education_id);
+        $this->authorize('update', $education);
+
         $updatedEducation = $this->educationService->update($education_id, $request->validated());
 
         return response()->json(['message'=>"Update a education successfully", 'data'=>new EducationResource($updatedEducation)],200);
@@ -65,6 +67,9 @@ class EducationController extends Controller
      */
     public function destroy(string $education_id)
     {
+        $education = $this->educationService->find($education_id);
+        $this->authorize('delete', $education);
+
         $this->educationService->destroy($education_id);
 
         return response()->json(['message'=>"Delete an education successfully"],200);

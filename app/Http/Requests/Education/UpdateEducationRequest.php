@@ -27,7 +27,7 @@ class UpdateEducationRequest extends ApiRequest
             'name' => ['required', 'string', 'min:3', 'max:255'],
             'degree' => ['required', 'string', 'min:3', 'max:255'],
             'start_date' => ['required', 'date'],
-            'end_date' => ['required', 'date']
+            'end_date' => ['required', 'date', 'after_or_equal:start_date']
         ];
     }
 }

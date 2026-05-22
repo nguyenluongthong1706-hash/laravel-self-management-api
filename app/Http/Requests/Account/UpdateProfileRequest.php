@@ -25,7 +25,7 @@ class UpdateProfileRequest extends ApiRequest
     {
         return [
             'name' => ['required', 'string','min:3', 'max:255'],
-            'date_of_birth'  => ['required', 'date'],
+            'date_of_birth'  => ['required', 'date', 'before_or_equal:today'],
             'gender'  => ['required', 'in:male,female'],
             'field' => ['required', 'string','min:3', 'max:255'],
             'slogan' => ['required', 'string','min:3', 'max:255'],

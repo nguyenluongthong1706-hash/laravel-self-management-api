@@ -13,7 +13,7 @@ class WorkExperience extends Model
 {
     use HasUuids;
 
-    protected function user(): BelongsTo{
+    public function user(): BelongsTo{
         return $this->belongsTo(User::class, "user_id","id");
     }
 }

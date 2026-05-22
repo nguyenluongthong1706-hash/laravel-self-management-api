@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\ProductLink;
 use Illuminate\Http\Request;
 use App\Services\ProductLinkService;
 use App\Http\Requests\ProductLink\CreateProductLinkRequest;
@@ -18,7 +19,7 @@ class ProductLinkController extends Controller
      */
     public function store(string $product_id, CreateProductLinkRequest $request)
     {
-
+        $this->authorize('create', ProductLink::class);
         $newProductLink = $this->productLinkService->store($product_id, $request->validated());
 
         return response()->json(['message'=>"Create a product Link successfully", 'data'=>new ProductLinkResource($newProductLink)],200);
@@ -30,6 +31,7 @@ class ProductLinkController extends Controller
     public function show(string $id)
     {
         $productLink = $this->productLinkService->find($id);
+        $this->authorize('view', $productLink);
 
         return response()->json(['message'=>"Get product Link successfully", 'data'=>$productLink],200);
     }
@@ -40,6 +42,8 @@ class ProductLinkController extends Controller
     public function update(string $product_link_id, UpdateProductLinkRequest $request)
     {
         $productLink = $this->productLinkService->find($product_link_id);
+        $this->authorize('update', $productLink);
+
         $data = $request->validated();
 
         $updatedProductLink= $this->productLinkService->update($product_link_id, $data);
@@ -52,6 +56,9 @@ class ProductLinkController extends Controller
      */
     public function destroy(string $product_link_id)
     {
+        $productLink = $this->productLinkService->find($product_link_id);
+        $this->authorize('delete', $productLink);
+
         $this->productLinkService->destroy($product_link_id);
 
         return response()->json(['message'=>"Delete a product Link successfully"],200);

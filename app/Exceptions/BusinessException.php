@@ -8,6 +8,12 @@ use Exception;
 
 class BusinessException extends Exception
 {
+    public function __construct(
+        string $message,
+        private int $statusCode = 400
+    ) {
+        parent::__construct($message);
+    }
     /**
      * Report the exception.
      */
@@ -21,6 +27,8 @@ class BusinessException extends Exception
      */
     public function render(Request $request): JsonResponse
     {
-        return response()->json(['message'=>$this->getMessage()],400);
+         return response()->json([
+            'message' => $this->getMessage()
+        ], $this->statusCode);
     }
 }
