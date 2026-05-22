@@ -25,7 +25,6 @@ class AccountController extends Controller
      */
     public function me(Request $request)
     {
-        info($request);
         $user = $this->accountService->find($request->user()->id);
         $this->authorize('view', $user);
 
@@ -55,35 +54,53 @@ class AccountController extends Controller
     }
 
     public function getToolByAccount(Request $request){
+        $user = $this->accountService->find($request->user()->id);
+        $this->authorize('view', $user);
+
         $tools = $this->accountService->getToolByAccount($request->user()->id);
 
         return response()->json(['message'=>"Get current user's tool list successfully", 'data'=>ToolResource::collection($tools)],200);
     }
 
     public function assignMultipleTools(AssignMultipleToolRequest $request){
+        $user = $this->accountService->find($request->user()->id);
+        $this->authorize('update', $user);
+
         $tools = $this->accountService->assignMultipleTools($request->user()->id, $request->validated());
         return response()->json(['message'=>"Assign tools to a user successfully", 'data'=> ToolResource::collection($tools)],200);
     }
 
     public function unAssignTool(Request $request, string $tool_id){
+        $user = $this->accountService->find($request->user()->id);
+        $this->authorize('update', $user);
+
         $this->accountService->unAssignTool($request->user()->id, $tool_id);
 
         return response()->json(['message'=>"Unassign a tool to a user successfully"],200);
     }
 
     public function getTechByAccount(Request $request){
+        $user = $this->accountService->find($request->user()->id);
+        $this->authorize('view', $user);
+
         $techs = $this->accountService->getTechByAccount($request->user()->id);
 
         return response()->json(['message'=>"Get current user's tech list successfully", 'data'=> TechResource::collection($techs)],200);
     }
 
     public function assignMultipleTechs(AssignMultipleTechRequest $request){
+        $user = $this->accountService->find($request->user()->id);
+        $this->authorize('update', $user);
+
         $techs = $this->accountService->assignMultipleTechs($request->user()->id, $request->validated());
 
         return response()->json(['message'=>"Assign techs to a user successfully", 'data' => TechResource::collection($techs)],200);
     }
 
     public function unAssignTech(Request $request, string $tech_id){
+        $user = $this->accountService->find($request->user()->id);
+        $this->authorize('update', $user);
+
         $this->accountService->unAssignTech($request->user()->id, $tech_id);
 
         return response()->json(['message'=>"Unassign a tech to a user successfully"],200);

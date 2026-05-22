@@ -5,6 +5,7 @@ use App\Models\Tech;
 use App\Repositories\TechStackRepository;
 use App\Services\Image\UploadImageService;
 use App\Exceptions\BusinessException;
+use Illuminate\Support\Facades\DB;
 
 class TechStackService {
     public function __construct(
@@ -21,25 +22,54 @@ class TechStackService {
     }
 
     public function store( array $data){
-        $result = $this->imageService->upload($data['icon']);
+        $result = null;
 
-        $data['icon'] = $result['url'];
-        $data['logo_public_id'] = $result['public_id'];
+        
+        try{
+            $result = $this->imageService->upload($data['icon']);
 
-        $newTechStack = $this->techStackRepo->store($data);
+            $data['icon'] = $result['url'];
+            $data['logo_public_id'] = $result['public_id'];
+
+            DB::beginTransaction();
+
+            $newTechStack = $this->techStackRepo->store($data);
+            DB::commit();
+        }catch(\Throwable $e){
+            DB::rollBack();
+
+            if($result){
+                $this->imageService->delete($result['public_id']);
+            }
+            throw $e;
+        }
 
         return $newTechStack;
     }
 
     public function update(array $data, Tech $techStack){
-        if (isset($data['icon'])){
-            $result = $imageService->update($techStack->logo_public_id ,$data['icon']);
+        $result = null;
 
-            $data['icon'] = $result['url'];
-            $data['logo_public_id'] = $result['public_id'];
+        try{
+            if (isset($data['icon'])){
+                $result = $this->imageService->update($techStack->logo_public_id ,$data['icon']);
+
+                $data['icon'] = $result['url'];
+                $data['logo_public_id'] = $result['public_id'];
+            }
+            
+            DB::beginTransaction();
+
+            $updatedTechStack = $this->techStackRepo->update($techStack->id, $data);
+            DB::commit();
+        }catch(\Throwable $e){
+            DB::rollBack();
+
+            if($result){
+                $this->imageService->delete($result['public_id']);
+            }
+            throw $e;
         }
-
-        $updatedTechStack = $this->techStackRepo->update($techStack->id, $data);
 
         return $updatedTechStack;
     }

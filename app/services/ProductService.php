@@ -6,6 +6,7 @@ use App\Models\Product;
 use App\Repositories\ProductRepository;
 use App\Services\Image\UploadImageService;
 use App\Exceptions\BusinessException;
+use Illuminate\Support\Facades\DB;
 
 class ProductService {
     public function __construct(
@@ -26,23 +27,37 @@ class ProductService {
     }
 
     public function store( string $user_id, array $data){
-        $result = $this->imageService->upload($data['image']);
-        $data['image'] = $result['url'];
-        $data['image_public_id'] = $result['public_id'];
+        $result = null;
 
-        $productData = collect($data)->only(['name','description','task','image','image_public_id','start_date','end_date','user_id'])->toArray();
-        $productData['user_id']= $user_id;
+        try{
+            $result = $this->imageService->upload($data['image']);
+            $data['image'] = $result['url'];
+            $data['image_public_id'] = $result['public_id'];
 
-        $links = $data['links']; 
-        $techIds = Arr::isAssoc($data['techs'])
-        ? collect($data['techs'])->pluck('tech_id')->toArray() 
-        : $data['techs'];
+            DB::beginTransaction();
 
-        $newProduct = $this->ProductRepo->store($productData);
+            $productData = collect($data)->only(['name','description','task','image','image_public_id','start_date','end_date','user_id'])->toArray();
+            $productData['user_id']= $user_id;
 
-        $newProduct->links()->createMany($links);
+            $links = $data['links']; 
+            $techIds = Arr::isAssoc($data['techs'])
+            ? collect($data['techs'])->pluck('tech_id')->toArray() 
+            : $data['techs'];
 
-        $newProduct->techs()->attach($techIds);
+            $newProduct = $this->ProductRepo->store($productData);
+
+            $newProduct->links()->createMany($links);
+
+            $newProduct->techs()->attach($techIds);
+            DB::commit();
+        }catch(\Throwable $e){
+            DB::rollBack();
+
+            if($result){
+                $this->imageService->delete($result['public_id']);
+            }
+            throw $e;
+        }
 
         return $newProduct;
     }
@@ -51,16 +66,31 @@ class ProductService {
         $techIds = collect($data['techs'])->pluck('tech_id')->toArray();
 
         $product = $this->find($product_id);
+        
+        return DB::transaction(function() use ($product, $techIds, $product_id){
+            $existingTechIds = $product->techs()
+                ->whereIn('techs.id', $techIds)
+                ->pluck('techs.id')
+                ->toArray();
 
-        $product->techs()->attach($techIds);
+            if (!empty($existingTechIds)) {
+                throw new BusinessException('Some techs already exist in product', 409);
+            }
 
-        $updatedProduct = $this->find($product_id);
+            $product->techs()->attach($techIds);
 
-        return $updatedProduct->techs;
+            $updatedProduct = $this->find($product_id);
+
+            return $updatedProduct->techs;
+        });    
     }
 
     public function unAssignTech(string $product_id, string $tech_id){
         $product = $this->find($product_id);
+
+        if (!$product->techs()->where('techs.id', $tech_id)->exists()) {
+            throw new BusinessException('This tech does not exist in product', 404);
+        }
 
         $product->techs()->detach($tech_id);
 
@@ -68,14 +98,26 @@ class ProductService {
     }
 
     public function update(array $data, Product $product){
-        if (isset($data['image'])){
-            $result = $this->imageService->update($product->image_public_id ,$data['image']);
+        $result = null;
 
-            $data['image'] = $result['url'];
-            $data['image_public_id'] = $result['public_id'];
+        try{
+            if (isset($data['image'])){
+                $result = $this->imageService->update($product->image_public_id ,$data['image']);
+
+                $data['image'] = $result['url'];
+                $data['image_public_id'] = $result['public_id'];
+            }
+            DB::beginTransaction();
+            $updateProduct = $this->ProductRepo->update($product->id, $data);
+            DB::commit();
+        }catch(\Throwable $e){
+            DB::rollBack();
+
+            if($result){
+                $this->imageService->delete($result['public_id']);
+            }
+            throw $e;
         }
-
-        $updateProduct = $this->ProductRepo->update($product->id, $data);
 
         return $updateProduct;
     }

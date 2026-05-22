@@ -27,7 +27,7 @@ class UpdateWorkExperienceRequest extends ApiRequest
             'position' => ['required', 'string', 'min:3', 'max:255'],
             'organization' => ['required', 'string', 'min:3', 'max:255'],
             'start_date' => ['required', 'date'],
-            'end_date' => ['required', 'date'],
+            'end_date' => ['required', 'date', 'after_or_equal:start_date'],
         ];
     }
 }

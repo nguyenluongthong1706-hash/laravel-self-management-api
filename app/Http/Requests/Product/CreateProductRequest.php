@@ -29,7 +29,7 @@ class CreateProductRequest extends ApiRequest
             'task'  => ['required', 'string','min:3','max:255'],
             'image' => ['required', 'mimes:jpg,jpeg,png', 'max:2048'],
             'start_date'  => ['required', 'date'],
-            'end_date'  => ['required', 'date'],
+            'end_date'  => ['required', 'date', 'after_or_equal:start_date'],
             'links' => ['required','array','min:1'],
             'links.*.title' => ['required', 'string','min:3','max:255'],
             'links.*.url' => ['required', 'url'],

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Tool;
 use Illuminate\Http\Request;
 use App\Http\Requests\Tool\CreateToolRequest;
 use App\Http\Requests\Tool\UpdateToolRequest;
@@ -18,6 +19,8 @@ class ToolController extends Controller
      */
     public function index()
     {
+        $this->authorize('viewAny', Tool::class);
+
         $tools = $this->toolService->all();
 
         return response()->json(['message'=>"Get tool list successfully", 'data'=>ToolResource::collection($tools)],200);
@@ -28,6 +31,8 @@ class ToolController extends Controller
      */
     public function store(CreateToolRequest $request)
     {
+        $this->authorize('create', Tool::class);
+
         $data = $request->validated();
 
         $newTool = $this->toolService->store($data);
@@ -41,6 +46,7 @@ class ToolController extends Controller
     public function show(string $id)
     {
         $tool = $this->toolService->find($id);
+        $this->authorize('view', $tool);
 
         return response()->json(['message'=>"Get tool successfully", 'data'=> new ToolResource($tool)],200);
     }
@@ -51,6 +57,8 @@ class ToolController extends Controller
     public function update(UpdateToolRequest $request, string $id)
     {
         $tool = $this->toolService->find($id);
+        $this->authorize('update', $tool);
+
         $data = $request->validated();
 
         $updatedTool = $this->toolService->update($data, $tool);
@@ -63,6 +71,9 @@ class ToolController extends Controller
      */
     public function destroy(string $id)
     {
+        $tool = $this->toolService->find($id);
+        $this->authorize('delete', $tool);
+
         $this->toolService->destroy($id);
 
         return response()->json(['message'=>"Delete a tool successfully"],200);

@@ -7,20 +7,15 @@ use App\Models\User;
 
 class UserPolicy
 {
-    /**
-     * Create a new policy instance.
-     */
-    public function __construct()
-    {
-        //
-    }
-
     public function viewAny (User $user) {
         return true;
     }
 
-    public function view (User $user) {
-        return true;
+    public function view(User $authUser, User $targetUser)
+    {
+        return $authUser->id === $targetUser->id
+            ? Response::allow()
+            : Response::deny('You do not allow to implement this feature!');
     }
 
     public function create (User $user) {
