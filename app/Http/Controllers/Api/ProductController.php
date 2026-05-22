@@ -9,6 +9,7 @@ use App\Http\Requests\Product\CreateProductRequest;
 use App\Http\Requests\Product\UpdateProductRequest;
 use App\Services\ProductService;
 use App\Http\Resources\ProductResource;
+use App\Http\Resources\TechResource;
 
 class ProductController extends Controller
 {
@@ -56,7 +57,7 @@ class ProductController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(string $product_id, UpdateProductRequest $request, UploadImageService $imageService)
+    public function update(string $product_id, UpdateProductRequest $request)
     {
         $product = $this->productService->find($product_id);
         $data = $request->validated();
@@ -66,10 +67,10 @@ class ProductController extends Controller
         return response()->json(['message'=>"Update a product successfully", 'data'=>new ProductResource($updatedProduct)],200);
     }
 
-    public function assignTech(string $product_id, AssignTechRequest $request){
-        $this->productService->assignTech($product_id, $request->validated());
+    public function assignTechs(string $product_id, AssignTechRequest $request){
+        $techs = $this->productService->assignTechs($product_id, $request->validated());
 
-        return response()->json(['message'=>"Assign a tech to a product successfully"],200);
+        return response()->json(['message'=>"Assign techs to a product successfully", 'data' => TechResource::collection($techs)],200);
     }
 
     public function unAssignTech(string $product_id, string $tech_id){

@@ -24,7 +24,8 @@ class AssignTechRequest extends ApiRequest
     public function rules(): array
     {
         return [
-            'tech_id' => ['required', 'exists:techs,id']
+            'techs' => ['required', 'array', 'min:1'],
+            'techs.*.tech_id'=>['required', 'exists:techs,id']
         ];
     }
 }
