@@ -2,7 +2,7 @@
 namespace App\Services;
 
 use Illuminate\Support\Arr;
-use App\Modals\User;
+use App\Models\User;
 use App\Repositories\AccountRepository;
 use App\Services\Image\UploadImageService;
 use App\Exceptions\BusinessException;
@@ -35,7 +35,7 @@ class AccountService {
     public function uploadAvatar(array $data, User $user){
         $result = $this->imageService->update($user->avatar_public_id, $data['avatar']);
 
-        $updatedUser = $this->accountRepo->update($user()->id, [
+        $updatedUser = $this->accountRepo->update($user->id, [
             'avatar' => $result['url'],
             'avatar_public_id'=> $result['public_id']
         ]);
