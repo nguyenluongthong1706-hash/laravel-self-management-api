@@ -31,10 +31,6 @@ class ApiRequest extends FormRequest
             $newKey = Str::snake($key);
             $transformedData[$newKey] = is_array($value) ? $this->transformKeys($value): $value;
         }
-        info("bbbbbbbbbbbbbbbbbbb");
-        info($data);
-        info("222222222222222222");
-        info($transformedData);
 
         return $transformedData;
     }
@@ -46,10 +42,6 @@ class ApiRequest extends FormRequest
             $newKey = Str::camel($key);
             $result[$newKey] = is_array($value) ? $this->camelCaseArray($value): $value;
         }
-        info("aaaaaaaaaaaaaaaaaa");
-        info($array);
-        info("11111111111111111");
-        info($result);
 
         return $result;
     }

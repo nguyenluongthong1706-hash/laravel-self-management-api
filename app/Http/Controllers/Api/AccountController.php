@@ -45,13 +45,13 @@ class AccountController extends Controller
         return response()->json(['message'=>"Update profile successfully", 'data'=> new UserResource($user)],200);
     }
 
-    public function uploadAvatar(UploadAvatarRequest $request, UploadImageService $imageService){
+    public function uploadAvatar(UploadAvatarRequest $request){
         $user = $this->accountService->find($request->user()->id);
         $this->authorize('update', $user);
 
         $updatedUser = $this->accountService->uploadAvatar($request->validated(), $user);
 
-        return response()->json(['message'=>"Upload Avatar successfully", 'data'=>$user],200);
+        return response()->json(['message'=>"Upload Avatar successfully", 'data'=>new UserResource($updatedUser)],200);
     }
 
     public function getToolByAccount(Request $request){

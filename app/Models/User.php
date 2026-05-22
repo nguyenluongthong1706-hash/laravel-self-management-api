@@ -20,7 +20,7 @@ use App\Models\WorkExperience;
 use App\Models\Tool;
 use App\Models\Tech;
 
-#[Fillable(['name', 'email', 'password', 'date_of_birth', 'gender', 'field', 'slogan', 'about_me', 'facebook_link', 'linkedin_link', 'github_link'])]
+#[Fillable(['name', 'email', 'password', 'date_of_birth', 'gender', 'field', 'slogan', 'about_me', 'facebook_link', 'linkedin_link', 'github_link', 'avatar', 'avatar_public_id'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable implements JWTSubject
 {
