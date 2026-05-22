@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Services\ProductLinkService;
 use App\Http\Requests\ProductLink\CreateProductLinkRequest;
 use App\Http\Requests\ProductLink\UpdateProductLinkRequest;
+use App\Http\Resources\ProductLinkResource;
 
 class ProductLinkController extends Controller
 {
@@ -18,9 +19,9 @@ class ProductLinkController extends Controller
     public function store(string $product_id, CreateProductLinkRequest $request)
     {
 
-        $productLink = $this->productLinkService->store($product_id, $request->validated());
+        $newProductLink = $this->productLinkService->store($product_id, $request->validated());
 
-        return response()->json(['message'=>"Create a product Link successfully", 'data'=>$productLink],200);
+        return response()->json(['message'=>"Create a product Link successfully", 'data'=>new ProductLinkResource($newProductLink)],200);
     }
 
     /**
@@ -41,9 +42,9 @@ class ProductLinkController extends Controller
         $productLink = $this->productLinkService->find($product_link_id);
         $data = $request->validated();
 
-        $this->productLinkService->update($product_link_id, $data);
+        $updatedProductLink= $this->productLinkService->update($product_link_id, $data);
 
-        return response()->json(['message'=>"Update a product Link successfully"],200);
+        return response()->json(['message'=>"Update a product Link successfully", 'data'=>new ProductLinkResource($updatedProductLink)],200);
     }
 
     /**

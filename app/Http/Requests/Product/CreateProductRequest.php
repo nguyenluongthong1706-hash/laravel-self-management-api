@@ -31,10 +31,10 @@ class CreateProductRequest extends ApiRequest
             'start_date'  => ['required', 'date'],
             'end_date'  => ['required', 'date'],
             'links' => ['required','array','min:1'],
-            'link.*.title' => ['required', 'string','min:3','max:255'],
-            'link.*.url' => ['required', 'url'],
+            'links.*.title' => ['required', 'string','min:3','max:255'],
+            'links.*.url' => ['required', 'url'],
             'techs'  => ['required','array','min:1'],
-            'tech.*.tech_id' =>['required', 'exists:techs,id']
+            'techs.*.tech_id' =>['required', 'exists:techs,id']
         ];
     }
 }

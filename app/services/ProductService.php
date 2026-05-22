@@ -2,7 +2,7 @@
 namespace App\Services;
 
 use Illuminate\Support\Arr;
-use App\Modals\Product;
+use App\Models\Product;
 use App\Repositories\ProductRepository;
 use App\Services\Image\UploadImageService;
 use App\Exceptions\BusinessException;
@@ -47,14 +47,16 @@ class ProductService {
         return $newProduct;
     }
 
-    public function assignTech(string $product_id, array $data){
-        $techId =  $data['tech_id'];
+    public function assignTechs(string $product_id, array $data){
+        $techIds = collect($data['techs'])->pluck('tech_id')->toArray();
 
         $product = $this->find($product_id);
 
-        $product->techs()->attach($techId);
+        $product->techs()->attach($techIds);
 
-        return true;
+        $updatedProduct = $this->find($product_id);
+
+        return $updatedProduct->techs;
     }
 
     public function unAssignTech(string $product_id, string $tech_id){

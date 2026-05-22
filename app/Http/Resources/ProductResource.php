@@ -14,6 +14,22 @@ class ProductResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        $productLinks = collect($this->links)->map(function ($link) {
+            return [
+                'id' => $link->id,
+                'title' => $link->title,
+                'url' => $link->url,
+            ];
+        });
+
+        $productTechs = collect($this->techs)->map(function ($tech) {
+            return [
+                'id' => $tech->id,
+                'name' => $tech->name,
+                'icon' => $tech->icon,
+            ];
+        });
+
         return [
             'id' => $this->id,
             'name' => $this->name,
@@ -23,8 +39,8 @@ class ProductResource extends JsonResource
             'startDate' => $this->start_date,
             'endDate' => $this->end_date,
             'userId' => $this->user_id,
-            'productLinks' => $this->links,
-            'productTechs' => $this->techs,
+            'productLinks' => $productLinks,
+            'productTechs' => $productTechs,
         ];
     }
 }

@@ -56,9 +56,9 @@ Route::prefix('v1')->group(function(){
             Route::get('product',[ProductController::class, 'getByAccount']);
             Route::post('product',[ProductController::class, 'store']);
             Route::put('product/{product_id}',[ProductController::class, 'update']);
-            Route::delete('product/{product_id}', [ProductController::class], 'destroy');
+            Route::delete('product/{product_id}', [ProductController::class,  'destroy']);
             // manage tech stack of product
-            Route::post('product/{product_id}/tech',[ProductController::class, 'assignTech']);
+            Route::post('product/{product_id}/techs',[ProductController::class, 'assignTechs']);
             Route::delete('product/{product_id}/tech/{tech_id}',[ProductController::class, 'unAssignTech']);
             // manage urls of product
             Route::post('product/{product_id}/link',[ProductLinkController::class, 'store']);
